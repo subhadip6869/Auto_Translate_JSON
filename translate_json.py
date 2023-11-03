@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
         print("\nWriting into file...")
         # Writing data into file from the dictionary
-        f = open(f"assets/{lang}.json", "w", encoding="utf-16")
+        f = open(f"assets/{lang}.json", "w", encoding="utf-8")
         f.write("{\n")
         for key, value in translated_texts.items():
             # append a comma to the end of the each item except the last item
