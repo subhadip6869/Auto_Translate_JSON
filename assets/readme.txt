@@ -1,0 +1,2 @@
+- Keep your static text files here in json format
+- A sample file has been provided for reference
