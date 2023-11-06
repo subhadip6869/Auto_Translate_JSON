@@ -1,6 +1,7 @@
 from googletrans import Translator
 import json
 import sys
+import os
 
 translator = Translator()
 
@@ -16,17 +17,17 @@ if __name__ == '__main__':
         f_source.close()
     except IndexError:
         print("Please specify input file name")
-        exit()
+        sys.exit()
     except FileNotFoundError as f_error:
         print(f_error)
-        exit()
+        sys.exit()
 
     try:
         # Source language
         src_language = sys.argv[1+CLA_START_INDEX]
     except IndexError:
         print("Please specify source language")
-        exit()
+        sys.exit()
 
     # Languages in which the source language is to be translated
     translate_language_lists = sys.argv[2+CLA_START_INDEX:]
@@ -62,8 +63,9 @@ if __name__ == '__main__':
 
         if not invalid_file:
             print("\nWriting into file...")
+            os.makedirs(os.path.dirname(f"assets/{lang}.json"), exist_ok=True)
             # Writing data into file from the dictionary
-            f = open(f"assets/{lang}.json", "w", encoding="utf8")
+            f = open(f"assets/{lang}.json", mode="w", encoding="utf8")
             json.dump(translated_texts, f, indent=2, ensure_ascii=False)
             f.close()
     
