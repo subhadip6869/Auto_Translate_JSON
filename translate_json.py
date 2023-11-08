@@ -6,14 +6,12 @@ import os
 translator = Translator()
 
 if __name__ == '__main__':
-    # from which index the command line arguments counting starts
-    # here the first argument for CLA is the file name
-    CLA_START_INDEX = 1
-
     try:
         # Load the source language json
-        f_source = open(sys.argv[0+CLA_START_INDEX], "r", encoding="utf8")
+        f_source = open(sys.argv[1], "r", encoding="utf8")
         source_texts = json.load(f_source)
+        source_path = os.path.dirname(sys.argv[1])
+        src_language = os.path.splitext(os.path.basename(sys.argv[1]))[0]
         f_source.close()
     except IndexError:
         print("Please specify input file name")
@@ -22,15 +20,15 @@ if __name__ == '__main__':
         print(f_error)
         sys.exit()
 
-    try:
-        # Source language
-        src_language = sys.argv[1+CLA_START_INDEX]
-    except IndexError:
-        print("Please specify source language")
-        sys.exit()
+    # try:
+    #     # Source language
+    #     src_language = sys.argv[1+CLA_START_INDEX]
+    # except IndexError:
+    #     print("Please specify source language")
+    #     sys.exit()
 
     # Languages in which the source language is to be translated
-    translate_language_lists = sys.argv[2+CLA_START_INDEX:]
+    translate_language_lists = sys.argv[2:]
 
     # Translating texts
     for lang in translate_language_lists:
@@ -56,16 +54,16 @@ if __name__ == '__main__':
                 except Exception:
                     try:
                         translated_texts[key] = translator.translate(value, src=src_language, dest=lang).text
-                    except Exception:
-                        pass            
+                    except Exception as e:
+                        print(e)        
 
         # print("Translated text: %s" % translated_texts)
 
         if not invalid_file:
             print("\nWriting into file...")
-            os.makedirs(os.path.dirname(f"assets/{lang}.json"), exist_ok=True)
+            os.makedirs(os.path.dirname(f"{source_path}/{lang}.json"), exist_ok=True)
             # Writing data into file from the dictionary
-            f = open(f"assets/{lang}.json", mode="w", encoding="utf8")
+            f = open(f"{source_path}/{lang}.json", mode="w", encoding="utf8")
             json.dump(translated_texts, f, indent=2, ensure_ascii=False)
             f.close()
     
