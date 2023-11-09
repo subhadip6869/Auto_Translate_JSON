@@ -1,4 +1,3 @@
-# from translate import Translator
 from deep_translator import GoogleTranslator
 import json
 import sys
