@@ -1,4 +1,5 @@
-from translate import Translator
+# from translate import Translator
+from deep_translator import GoogleTranslator
 import json
 import sys
 import os
@@ -21,7 +22,7 @@ if __name__ == '__main__':
             translate_language_lists = sys.argv[2:]
             for lang in translate_language_lists:
                 invalid_file = False
-                translator = Translator(from_lang=src_language, to_lang=lang)
+                translator = GoogleTranslator(source=src_language, target=lang)
                 translated_texts = {}
                 if choice == "2":
                     curr_texts = {}
