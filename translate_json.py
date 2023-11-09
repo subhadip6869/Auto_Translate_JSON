@@ -82,7 +82,7 @@ if __name__ == '__main__':
                     print("\nStoring translations...")
                     # Writing data into file from the dictionary
                     f = open(f"{source_path}/{lang}.json", mode="w", encoding="utf8")
-                    json.dump(dict(sorted({**curr_texts, **translated_texts})), f, indent=2, ensure_ascii=False)
+                    json.dump(dict(sorted({**curr_texts, **translated_texts}.items())), f, indent=2, ensure_ascii=False)
                     f.close()
                 # clearing the object
                 del translator
