@@ -1,4 +1,4 @@
-from translate import Translator
+from deep_translator import GoogleTranslator
 import json
 import sys
 import os
@@ -31,7 +31,7 @@ if __name__ == '__main__':
             # Translating texts
             for lang in translate_language_lists:
                 invalid_file = False
-                translator = Translator(from_lang=src_language, to_lang=lang)
+                translator = GoogleTranslator(source=src_language, target=lang)
 
                 # Declaring a blank dictionary for storing the translations
                 translated_texts = {}
