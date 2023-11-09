@@ -1,57 +1,65 @@
-from googletrans import Translator
+from translate import Translator
 import json
 import sys
 import os
-
-translator = Translator()
-
 if __name__ == '__main__':
-    CLA_START_INDEX = 1
-
     try:
-        f_source = open(sys.argv[0+CLA_START_INDEX], "r", encoding="utf8")
-        source_texts = json.load(f_source)
-        f_source.close()
-    except IndexError:
-        print("Please specify input file name")
-        sys.exit()
-    except FileNotFoundError as f_error:
-        print(f_error)
-        sys.exit()
-
-    try:
-        src_language = sys.argv[1+CLA_START_INDEX]
-    except IndexError:
-        print("Please specify source language")
-        sys.exit()
-
-    translate_language_lists = sys.argv[2+CLA_START_INDEX:]
-
-    for lang in translate_language_lists:
-        invalid_file = False
-        translated_texts = {}
-        curr, total = 0, len(source_texts)
-        for key, value in source_texts.items():
-            try:
-                curr += 1
-                print(f"Translating into {lang}: {curr}/{total}", end="\r")
-                translated_texts[key] = translator.translate(value, src=src_language, dest=lang).text
-            except ValueError as v_error:
-                print(f"\n{v_error}")
-                invalid_file = True
-                break
-            except Exception:
-                try:
-                    translated_texts[key] = translator.translate(value, src=src_language, dest=lang).text
-                except Exception:
+        try:
+            f_source = open(sys.argv[1], "r", encoding="utf8")
+            source_texts = json.load(f_source)
+            source_path = os.path.dirname(sys.argv[1])
+            src_language = os.path.splitext(os.path.basename(sys.argv[1]))[0]
+            f_source.close()
+        except IndexError:
+            print("Please specify input file name")
+            sys.exit()
+        except FileNotFoundError as f_error:
+            print(f_error)
+            sys.exit()
+        choice = input("1. Keep Existing Translations, 2. Clean & Translate: ")
+        if choice == "1" or choice == "2":
+            translate_language_lists = sys.argv[2:]
+            for lang in translate_language_lists:
+                invalid_file = False
+                translator = Translator(from_lang=src_language, to_lang=lang)
+                translated_texts = {}
+                if choice == "2":
+                    curr_texts = {}
+                else:
                     try:
-                        translated_texts[key] = translator.translate(value, src=src_language, dest=lang).text
+                        c_file = open(f"{source_path}/{lang}.json", "r", encoding="utf8")
+                        curr_texts = json.load(c_file)
+                        c_file.close()
+                    except FileNotFoundError:
+                        curr_texts = {}
+                curr, total = 0, len(source_texts) 
+                for key, value in source_texts.items():
+                    try:
+                        curr += 1
+                        print(f"({lang}) Processed: {curr}/{total}", end="\r")
+                        if not key in curr_texts.keys():
+                            translated_texts[key] = translator.translate(value)
+                    except ValueError as v_error:
+                        print(f"\n{v_error}")
+                        invalid_file = True
+                        break
                     except Exception:
-                        pass
-
-        if not invalid_file:
-            print("\nWriting into file...")
-            os.makedirs(os.path.dirname(f"assets/{lang}.json"), exist_ok=True)
-            f = open(f"assets/{lang}.json", mode="w", encoding="utf8")
-            json.dump(translated_texts, f, indent=2, ensure_ascii=False)
-            f.close()
+                        try:
+                            if not key in curr_texts.keys():
+                                translated_texts[key] = translator.translate(value)
+                        except Exception:
+                            try:
+                                if not key in curr_texts.keys():
+                                    translated_texts[key] = translator.translate(value)
+                            except Exception as e:
+                                print(f"{e} {key} {value}")
+                if not invalid_file:
+                    print("\nStoring translations...")
+                    f = open(f"{source_path}/{lang}.json", mode="w", encoding="utf8")
+                    json.dump({**curr_texts, **translated_texts}, f, indent=2, ensure_ascii=False)
+                    f.close()
+                del translator
+        else:
+            print("\nInvalid choice...")
+    except KeyboardInterrupt:
+        print("\nProcess exited")
