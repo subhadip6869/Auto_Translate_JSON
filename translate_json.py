@@ -1,4 +1,5 @@
 from deep_translator import GoogleTranslator
+from deep_translator.exceptions import LanguageNotSupportedException
 import json
 import sys
 import os
@@ -26,12 +27,19 @@ if __name__ == '__main__':
         if choice == "1" or choice == "2":
 
             # Languages in which the source language is to be translated
-            translate_language_lists = sys.argv[2:]
+            # translate_language_lists = sys.argv[2:]
 
+            # Automatically detect language files in the source directory
+            translate_language_lists = [os.path.splitext(file)[0] for file in os.listdir(source_path) if file.endswith(".json")]
+            
             # Translating texts
             for lang in translate_language_lists:
                 invalid_file = False
-                translator = GoogleTranslator(source=src_language, target=lang)
+                try:
+                    translator = GoogleTranslator(source=src_language, target=lang)
+                except LanguageNotSupportedException:
+                    # if any extra json file is there which is not language file, then skip the loop
+                    continue
 
                 # Declaring a blank dictionary for storing the translations
                 translated_texts = {}
