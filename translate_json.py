@@ -22,9 +22,12 @@ if __name__ == '__main__':
             print(f_error)
             sys.exit()
 
-        choice = input("1. Keep Existing Translations, 2. Clean & Translate: ")
+        choice = input("1. Keep Existing Translations, 2. Clean & Translate, 3. Remove a translation: ")
 
-        if choice == "1" or choice == "2":
+        if choice == "1" or choice == "2" or choice == "3":
+
+            if choice == "3":
+                remove_key = input("Enter text to be removed: ")
 
             # Languages in which the source language is to be translated
             # translate_language_lists = sys.argv[2:]
@@ -56,35 +59,38 @@ if __name__ == '__main__':
                     except FileNotFoundError:
                         curr_texts = {}
 
-                curr, total = 0, len(source_texts) 
-                # Translating the values one by one using the google translator and storing inside the dictionary
-                for key, value in source_texts.items():
-                    # print("%s: %s" % (key, translator.translate(value, src=src_language, dest=lang).text))
-                    try:
-                        curr += 1
-                        print(f"({lang}) Processed: {curr}/{total}", end="\r")
-                        if not key in curr_texts.keys():
-                            # translated_texts[key] = translator.translate(value, src=src_language, dest=lang).text
-                            translated_texts[key] = translator.translate(value)
-                    except ValueError as v_error:
-                        print(f"\n{v_error}")
-                        invalid_file = True
-                        break
-                    except Exception:
-                        # if error occurs, try two more time to translate
+                if choice == "3":
+                    curr_texts.pop(remove_key, "No key removed")
+                else:
+                    curr, total = 0, len(source_texts) 
+                    # Translating the values one by one using the google translator and storing inside the dictionary
+                    for key, value in source_texts.items():
+                        # print("%s: %s" % (key, translator.translate(value, src=src_language, dest=lang).text))
                         try:
+                            curr += 1
+                            print(f"({lang}) Processed: {curr}/{total}", end="\r")
                             if not key in curr_texts.keys():
                                 # translated_texts[key] = translator.translate(value, src=src_language, dest=lang).text
                                 translated_texts[key] = translator.translate(value)
+                        except ValueError as v_error:
+                            print(f"\n{v_error}")
+                            invalid_file = True
+                            break
                         except Exception:
+                            # if error occurs, try two more time to translate
                             try:
                                 if not key in curr_texts.keys():
                                     # translated_texts[key] = translator.translate(value, src=src_language, dest=lang).text
                                     translated_texts[key] = translator.translate(value)
-                            except Exception as e:
-                                print(f"{e} {key} {value}")        
+                            except Exception:
+                                try:
+                                    if not key in curr_texts.keys():
+                                        # translated_texts[key] = translator.translate(value, src=src_language, dest=lang).text
+                                        translated_texts[key] = translator.translate(value)
+                                except Exception as e:
+                                    print(f"{e} {key} {value}")        
 
-                # print("Translated text: %s" % translated_texts)
+                    # print("Translated text: %s" % translated_texts)
 
                 if not invalid_file:
                     print("\nStoring translations...")
