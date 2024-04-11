@@ -39,7 +39,8 @@ if __name__ == '__main__':
             for lang in translate_language_lists:
                 invalid_file = False
                 try:
-                    translator = GoogleTranslator(source=src_language, target=lang)
+                    dst_lang = 'iw' if lang == 'he' else lang
+                    translator = GoogleTranslator(source=src_language, target=dst_lang)
                 except LanguageNotSupportedException:
                     # if any extra json file is there which is not language file, then skip the loop
                     continue
