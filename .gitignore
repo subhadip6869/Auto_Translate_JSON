@@ -1,5 +1,7 @@
 *.json
 */*.json
+!supported*.json
+
 !assets/sample.json
 /build
 /dist
