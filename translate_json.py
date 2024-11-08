@@ -46,6 +46,9 @@ if __name__ == '__main__':
             for lang in translate_language_lists:
                 try:
                     if lang == src_language:
+                        with open(f"{source_path}/{lang}.json", mode="w", encoding="utf8") as f:
+                            json.dump(dict(sorted(source_texts.items())), f, indent=2,
+                                      ensure_ascii=False)
                         continue
                     translator = GoogleTranslator(source=src_language, target=map_language_key(lang))
                     c_file = open(f"{source_path}/{lang}.json", "r", encoding="utf8")
@@ -89,6 +92,9 @@ if __name__ == '__main__':
             for lang in translate_language_lists:
                 try:
                     if lang == src_language:
+                        with open(f"{source_path}/{lang}.json", mode="w", encoding="utf8") as f:
+                            json.dump(dict(sorted(source_texts.items())), f, indent=2,
+                                      ensure_ascii=False)
                         continue
                     translator = GoogleTranslator(source=src_language, target=map_language_key(lang))
                     c_file = open(f"{source_path}/{lang}.json", "r", encoding="utf8")
